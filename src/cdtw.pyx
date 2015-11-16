@@ -34,6 +34,9 @@ def dtw(np.ndarray[DTYPE_t, ndim=2] XA,
     cdef DTYPE_t[:,:] H
     cdef DTYPE_t[:,:] D
 
+    if metric == 2:
+        eps = np.finfo(XA.dtype).eps
+
     mA = XA.shape[0]
     mB = XB.shape[0]
     dim = XA.shape[1]
