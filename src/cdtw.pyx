@@ -26,7 +26,7 @@ def dtw(np.ndarray[DTYPE_t, ndim=2] XA,
 
     :param XA: ndarray of samples x features
     :param XB: ndarray of samples x features
-    :param metric: switch between euclidean (0) and cosine (1) distances
+    :param metric: switch between euclidean (0) and cosine (1) distances and kl divergence (3)
     """
     cdef unsigned int mA, mB, dim, i, j, k
     cdef double powA, powB, enumerator, denominator
@@ -56,6 +56,14 @@ def dtw(np.ndarray[DTYPE_t, ndim=2] XA,
                     enumerator += XA[i, k] * XB[j, k]
                 denominator = sqrt(powA) * sqrt(powB)
                 D[i, j] = 1 - enumerator / denominator
+            elif metric == 2:
+                res = 0
+                for k in xrange(0, dim):
+                    if XA[i, k] > eps:
+                        res += (XA[i, k] - XB[j, k]) * np.log(XA[i, k])
+                    if XB[j, k] > eps:
+                        res += (XA[i, k] - XB[j, k]) * np.log(XB[j, k])
+                D[i, j] = 0.5 * res
 
     H = np.empty([mA+1, mB+1], dtype=DTYPE)
     for i in xrange(1, mA+1):
